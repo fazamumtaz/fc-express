@@ -66,8 +66,8 @@ class TaskController {
   // membuat methode DELETE
   remove = (req, res) => {
 
-    const {id} = req.body
-    
+    const {id} = req.params
+
     if(id == undefined){
       req.json({
         status: STATUS_CODES[400],
@@ -93,7 +93,8 @@ class TaskController {
   }
 
   update = (req, res) => {
-      const {id, status} = req.body
+      const {status} = req.body
+      const {id} = req.params
       
       // handle kalo id gaada
       if(id == undefined){
