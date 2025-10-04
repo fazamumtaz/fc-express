@@ -1,10 +1,23 @@
 const { randomUUID } = require('node:crypto')
+const {z} = require('zod')
+
+const TASK_STATUS = ['todo', 'on progress', 'completed']
+
+const SchemaAdd = z.object({
+  title: z.string().min(3)
+}).required()
+
+const SchemaUpdate = z.object({
+  status: z.enum(TASK_STATUS)
+}).required()
+
+
 
 class TaskRepository {
     #tasks = [
     {id: randomUUID(), title: 'Belajar Matematika', status: 'completed'},
-    {id: randomUUID(), title: 'Masak untuk makan siang', status: 'progress'},
-    {id: randomUUID(), title: 'Tugas Basis Data', status: 'notyet'}
+    {id: randomUUID(), title: 'Masak untuk makan siang', status: 'todo'},
+    {id: randomUUID(), title: 'Tugas Basis Data', status: 'todo'}
   ]
 
   all = () => this.#tasks
@@ -39,5 +52,7 @@ class TaskRepository {
 }
 
 module.exports = {
-  TaskRepository
+  TaskRepository,
+  SchemaAdd,
+  SchemaUpdate
 }
