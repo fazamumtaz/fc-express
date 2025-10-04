@@ -1,13 +1,12 @@
-const { randomUUID } = require('node:crypto')
 const { STATUS_CODES } = require('node:http')
 
 class TaskController {
   
-  #tasks = [
-    {id: randomUUID(), title: 'Belajar Matematika', status: 'completed'},
-    {id: randomUUID(), title: 'Masak untuk makan siang', status: 'progress'},
-    {id: randomUUID(), title: 'Tugas Basis Data', status: 'notyet'}
-  ]
+  #repo
+
+  constructor(taskRepository){
+    this.#repo = taskRepository
+  }
 
   #sendJSON = (res, statusCode, data) => {
     const rawjson = JSON.stringify(data) 
@@ -43,7 +42,7 @@ class TaskController {
   // membuat method GET
   getAll = (req, res) => {
     // this.#sendJSON(res, 200, this.#tasks)
-    res.json(this.#tasks).status(200)
+    res.json(this.#repo.all()).status(200)
   }
 
   // membuat method POST
@@ -57,8 +56,7 @@ class TaskController {
       }).status(400)
       return
     }
-    const newTask = {id: randomUUID(), title: title, status: 'pending'}
-    this.#tasks.push(newTask)
+    const newTask = this.#repo.add(title)
     res.json(newTask).status(201)
   }
 
@@ -77,19 +75,16 @@ class TaskController {
     }
 
     // temukan task dengan id yang dimaksud, dan mengembalikan -1 jika tidak ada
-    const deletedTask = this.#tasks.find((task) => task.id === id)
+    const {ok, data} = task.#repo.removeById(id)
     
-    if(deletedTask === undefined) {
+    if(!ok) {
       req.json({
         status: STATUS_CODES[404],
         message: 'task not found'
       }).status(400)
       return
     }
-
-    this.#tasks = this.#tasks.filter(task => task.id !== deletedTask.id)
-    res.json(deletedTask).status(201)
-
+    res.json(data).status(201)
   }
 
   update = (req, res) => {
@@ -114,19 +109,16 @@ class TaskController {
         return
       }
 
-      const index = this.#tasks.findIndex((task) => task.id === id)
+      const {ok, data} = this.#repo.update(id, status)
       
-      if(index < 0) {
+      if(!ok) {
         req.json({
           status: STATUS_CODES[404],
           message: 'task not found'
         }).status(404)
         return
       }
-
-      this.#tasks[index].status = status
-      // this.#sendJSON(res, 201, this.#tasks[index])
-      res.json(this.#tasks[index]).status(200)
+      res.json(data).status(200)
 
   }
 }
