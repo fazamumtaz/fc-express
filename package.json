@@ -1,0 +1,14 @@
+{
+  "name": "plain-webserver",
+  "version": "1.0.0",
+  "description": "learn web server",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Faza Mumtaz",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
